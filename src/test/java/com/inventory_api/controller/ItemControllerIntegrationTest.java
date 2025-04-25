@@ -1,5 +1,5 @@
 // src/test/java/com/inventory_api/ItemControllerIntegrationTest.java
-package com.inventory_api;
+package com.inventory_api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inventory_api.dto.ItemDTO;
