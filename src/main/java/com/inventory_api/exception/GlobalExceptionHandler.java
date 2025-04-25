@@ -72,8 +72,8 @@ public class GlobalExceptionHandler {
         ErrorResponse body = new ErrorResponse(
             LocalDateTime.now(),
             HttpStatus.BAD_REQUEST.value(),
-            "Constraint Violation",
-            "Validation error",
+            "Validation Failed",
+            "One or more fields are invalid",
             details
         );
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
