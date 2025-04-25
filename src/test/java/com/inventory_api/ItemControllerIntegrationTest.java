@@ -61,7 +61,7 @@ public class ItemControllerIntegrationTest {
     void getAllItems_returnsListContainingCreated() throws Exception {
         mockMvc.perform(get("/api/items"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].id").value(createdId));
+            .andExpect(jsonPath("$.content[0].id").value(createdId));
     }
 
     @Test
@@ -111,4 +111,37 @@ public class ItemControllerIntegrationTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.error").value("Validation Failed"));
     }
+
+    @Test
+@Order(9)
+void getAllItems_withPagination_returnsPagedResults() throws Exception {
+    // Crea 15 items de prueba
+    for (int i = 1; i <= 15; i++) {
+        ItemDTO dto = new ItemDTO(null, "Item" + i, "Desc " + i, i, new BigDecimal("1.00"));
+        mockMvc.perform(post("/api/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isOk());
+    }
+
+    // Página 0, tamaño 5
+    mockMvc.perform(get("/api/items")
+            .param("page", "0")
+            .param("size", "5")
+            .param("sort", "name,asc"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content.length()").value(5))
+        .andExpect(jsonPath("$.totalElements").value(15))
+        .andExpect(jsonPath("$.totalPages").value(3))
+        .andExpect(jsonPath("$.number").value(0));
+
+    // Página 2, tamaño 5 (la última)
+    mockMvc.perform(get("/api/items")
+            .param("page", "2")
+            .param("size", "5")
+            .param("sort", "name,asc"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content.length()").value(5))
+        .andExpect(jsonPath("$.number").value(2));
+}
 }

@@ -19,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Validated
 @RestController
 @RequestMapping("/api/items")
@@ -41,11 +44,9 @@ public class ItemController {
 
     // GET: list all items
     @GetMapping
-    public List<ItemDTO> getAllItems() {
-        return itemRepository.findAll()
-            .stream()
-            .map(this::toDto)
-            .collect(Collectors.toList());
+    public Page<ItemDTO> getAllItems(Pageable pageable) {
+        return itemRepository.findAll(pageable)
+                             .map(this::toDto);
     }
 
     // GET: get item by ID
